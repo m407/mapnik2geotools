@@ -4,7 +4,7 @@ import sbtassembly.AssemblyPlugin.autoImport._
 
 name := "mn2gt"
 
-version := "0.1"
+version := "0.2"
 
 organization := "org.opengeo"
 

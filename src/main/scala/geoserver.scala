@@ -164,25 +164,25 @@ sealed case class GeoServerConnection(
     )
   }
 
-  def addStyle(name: String, style: Node): Int = 
+  def addStyle(namespacePrefix:String, name: String, style: Node): Int =
     post(
-      base + "/styles?name=" + encode(name, "UTF-8"),
+      base + "/workspaces/" + namespacePrefix + "/styles?name=" + encode(name, "UTF-8"),
       style,
       "application/vnd.ogc.sld+xml"
     )
 
-  def updateStyle(name: String, style: Node): Int =
+  def updateStyle(namespacePrefix: String, name: String, style: Node): Int =
     put(
-      base + "/styles/" + name + ".sld",
+      base + "/workspaces/" + namespacePrefix + "/styles/" + name + ".sld",
       style,
       "application/vnd.ogc.sld+xml"
     )
 
-  def setStyle(name: String, style: Node): Int = {
+  def setStyle(namespacePrefix: String, name: String, style: Node): Int = {
     try 
-      updateStyle(name, style)
+      updateStyle(namespacePrefix, name, style)
     catch {
-      case _ : Throwable => addStyle(name, style)
+      case _ : Throwable => addStyle(namespacePrefix, name, style)
     }
   }
 

@@ -1,7 +1,10 @@
 package me.winslow.d.mn2gt.driver
 
-import me.winslow.d.mn2gt._, Mapnik2GeoTools._
-import xml._, transform._
+import me.winslow.d.mn2gt.Mapnik2GeoTools._
+import me.winslow.d.mn2gt._
+
+import scala.xml._
+import scala.xml.transform._
 
 sealed trait Operation {
   def run()
@@ -169,7 +172,6 @@ case class PublishToGeoServer(
   mapnikFile: java.io.File,
   connection: GeoServerConnection
 ) extends Operation {
-  import java.net.URL
 
   def run() {
     val original = xml.XML.load(mapnikFile.getAbsolutePath)
@@ -179,14 +181,15 @@ case class PublishToGeoServer(
       new RuleTransformer(RuleCleanup, URLResolver)
     val fullTransform = convert andThen cleanup
 
+    connection.setWorkspace(connection.Workspace(
+      connection.namespacePrefix, connection.namespaceUri)).ensuring(Set(200, 201) contains _)
+
     val converted = fullTransform(original)
     val styles = converted \\ "Style"
     styles.foreach { s =>
-      writeStyle(s)
+      writeStyle(connection.namespacePrefix, s)
       // TODO: Progress notification for GUI
     }
-    connection.setWorkspace(connection.Workspace(
-      connection.namespacePrefix, connection.namespaceUri)).ensuring(Set(200, 201) contains _)
     val layers = converted \\ "Layer"
     writeLayers(layers)
   }
@@ -209,7 +212,7 @@ case class PublishToGeoServer(
     }
   }
 
-  def writeStyle(style: Node) {
+  def writeStyle(namespacePrefix: String, style: Node) {
     val name = style.attribute("name").map(_.text).getOrElse("style")
     
     val wrapper =
@@ -230,14 +233,11 @@ case class PublishToGeoServer(
         </NamedLayer>
       </StyledLayerDescriptor>
 
-    connection.setStyle(normalizeStyleName(name), wrapper).ensuring(Set(200, 201) contains _)
+    connection.setStyle(namespacePrefix, normalizeStyleName(name), wrapper).ensuring(Set(200, 201) contains _)
   }
 
   def writeLayers(layers: NodeSeq) {
-    import connection.{
-      Store, DataSet, FeatureType, Coverage,
-      ShapefileStore, PostgisStore, GeoTIFFStore
-    }
+    import connection._
 
     def params(datastore: NodeSeq): Map[String, String] =
       datastore \ "Parameter" map {
