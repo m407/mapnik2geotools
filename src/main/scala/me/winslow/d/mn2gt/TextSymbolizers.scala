@@ -1,7 +1,7 @@
 package me.winslow.d.mn2gt
 
-import xml._
-import transform.RewriteRule
+import scala.xml._
+import scala.xml.transform.RewriteRule
 
 package mapnik2 {
   trait LabelHandling {
@@ -24,7 +24,7 @@ package mapnik2 {
       <Label>
         { for {
             name <- (text orElse atts.get("name")).toSeq
-            trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "")
+            trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "").replaceAll(":", "_")
             prop = <ogc:PropertyName>{ trimmed }</ogc:PropertyName>
           } yield
             { atts.get("text-transform") match {
@@ -217,7 +217,7 @@ package mapnik1 {
       <Label>
         { for {
             name <- (text orElse atts.get("name")).toSeq
-            trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "")
+            trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "").replaceAll(":", "_")
             prop = <ogc:PropertyName>{ trimmed }</ogc:PropertyName>
           } yield
             { atts.get("text_transform") match {

@@ -339,13 +339,13 @@ sealed case class GeoServerConnection(
 
   def addLayerGroup(name: String, layers: Seq[(String, String)]): Int =
     post(
-      base + "/layergroups/",
+      base + "/workspaces/" + name + "/layergroups/",
       layerGroupXML(name, layers)
     )
 
   def updateLayerGroup(name: String, layers: Seq[(String, String)]): Int = 
     put(
-      base + "/layergroups/" + name + ".xml",
+      base + "/workspaces/" + name + "/layergroups/" + name + ".xml",
       layerGroupXML(name, layers)
     )
 

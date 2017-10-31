@@ -1,7 +1,7 @@
 package me.winslow.d.mn2gt
-import util.parsing.combinator._
-import xml._
-import xml.transform._
+import scala.util.parsing.combinator._
+import scala.xml._
+import scala.xml.transform._
 
 object Mapnik2GeoTools {
 
@@ -79,7 +79,7 @@ object Mapnik2GeoTools {
   object FilterParser extends RegexParsers {
     val property =
       """\[\p{Graph}+\]""".r map (s =>
-        <PropertyName>{s.substring(1, s.length -1)}</PropertyName>
+        <PropertyName>{s.substring(1, s.length -1).replaceAll(":", "_")}</PropertyName>
       )
 
     val literal =
