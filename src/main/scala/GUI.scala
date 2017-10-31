@@ -1,8 +1,11 @@
 package me.winslow.d.mn2gt
-import driver._
-
-import scala.swing._
 import javax.swing
+
+import me.winslow.d.mn2gt.driver._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.swing._
 
 object GUI extends SwingApplication {
 
@@ -230,8 +233,7 @@ object GUI extends SwingApplication {
   
   def startup(args: Array[String]) {
     locally {
-      import javax.swing.UIManager.{ getInstalledLookAndFeels, setLookAndFeel }
-      import collection.JavaConversions._
+      import javax.swing.UIManager.{getInstalledLookAndFeels, setLookAndFeel}
       for (nimbus <- getInstalledLookAndFeels.find(_.getName == "Nimbus"))
         setLookAndFeel(nimbus.getClassName)
     }
@@ -292,10 +294,10 @@ object GUI extends SwingApplication {
           val reporter = new ProgressReporter(frame)
           reporter.setLocationRelativeTo(frame)
           State.job foreach { job =>
-            actors.Futures.future {
+            Future {
               try
                 job.run()
-              catch { case ex =>
+              catch { case ex  : Throwable =>
                 reporter.visible = false
                 val buff = new java.io.StringWriter
                 val writer = new java.io.PrintWriter(buff)

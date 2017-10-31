@@ -1,8 +1,10 @@
 package me.winslow.d.mn2gt.driver
 
-import xml._
 import java.net.URLEncoder.encode
+
 import org.apache.commons.httpclient
+
+import scala.xml._
 
 sealed case class GeoServerConnection(
   base: String,
@@ -134,7 +136,7 @@ sealed case class GeoServerConnection(
     val request = new httpclient.methods.PostMethod(url)
     request.setRequestEntity(
       new httpclient.methods.StringRequestEntity(
-        message.toString, mime, "utf-8"
+        message.toString, mime, null
       )
     )
     lazy val body = 
@@ -151,7 +153,7 @@ sealed case class GeoServerConnection(
     val request = new httpclient.methods.PutMethod(url)
     request.setRequestEntity(
       new httpclient.methods.StringRequestEntity(
-        message.toString, mime, "utf-8"
+        message.toString, mime, null
       )
     )
     lazy val body =
@@ -180,7 +182,7 @@ sealed case class GeoServerConnection(
     try 
       updateStyle(name, style)
     catch {
-      case _ => addStyle(name, style)
+      case _ : Throwable => addStyle(name, style)
     }
   }
 
@@ -377,7 +379,7 @@ sealed case class GeoServerConnection(
     try 
       updateWorkspace(ws)
     catch {
-      case _ => addWorkspace(ws)
+      case _ : Throwable => addWorkspace(ws)
     }
   }
 }
