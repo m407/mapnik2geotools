@@ -12,9 +12,9 @@ scalaVersion := "2.12.4"
 
 fork in run := false
 
-mainClass in (Compile, run) := Some("me.winslow.d.mn2gt.GUI")
+mainClass in (Compile, run) := Some("me.winslow.d.mn2gt.Driver")
 
-mainClass in assembly := Some("me.winslow.d.mn2gt.GUI")
+mainClass in assembly := Some("me.winslow.d.mn2gt.Driver")
 
 
 libraryDependencies ++= Seq(
